@@ -11,10 +11,6 @@ export default function MangaView() {
     const router = useRouter()
     const charactersData = useFetchCharactersManga(params.id)
 
-    useEffect(() => {
-        console.log(charactersData)
-    }, [charactersData])
-
     return (
         <View style={styles.container}>
             <Stack.Screen

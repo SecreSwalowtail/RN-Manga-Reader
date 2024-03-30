@@ -1,7 +1,5 @@
 import { View, StyleSheet, Text, Pressable } from "react-native"
 import { Image } from "expo-image"
-import { useEffect } from "react"
-import useFetchCharacterDescription from "~/utils/useFetchCharacterDescription"
 import { Link } from "expo-router"
 
 export default function CharacterCard({image, roles, id, name} : any) {
@@ -43,7 +41,7 @@ const styles = StyleSheet.create({
         width: '100%',
         maxHeight: 150,
         maxWidth: 300,
-        borderRadius: 28
+        borderRadius: 28,
     },
     textContainer: {
         paddingTop: 14,
