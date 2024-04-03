@@ -1,9 +1,9 @@
 import { StyleSheet, View, Text, Pressable, ScrollView, FlatList } from "react-native"
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
-import useFetchCharactersManga from "~/utils/useFetchCharactersManga"
+import useFetchCharactersManga from '../../utils/useFetchCharactersManga'
 import { Image } from "expo-image"
-import FavoriteButton from "~/components/FavoriteButton"
-import CharacterCard from "~/components/CharacterCard"
+import FavoriteButton from '../../components/FavoriteButton'
+import CharacterCard from "../../components/CharacterCard"
 import { useEffect, useState } from "react"
 
 export default function MangaView() {

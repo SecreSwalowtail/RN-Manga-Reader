@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, ImageBackground } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSegments } from "expo-router";
 import { useSelector } from "react-redux";
-import { avatarApi } from "~/utils/axiosInstances";
+import { avatarApi } from "../utils/axiosInstances";
 
 function ProfileIconNotification() {
     return (

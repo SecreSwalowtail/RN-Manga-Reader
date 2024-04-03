@@ -2,8 +2,8 @@ import {View, StyleSheet, Text, Pressable} from 'react-native'
 import GithubLogo from '../assets/github.svg'
 import DiscordLogo from '../assets/discord.svg'
 import { useDispatch } from 'react-redux'
-import { storeDataString } from '~/utils/storageFunctions'
-import { fetchGuestState, fetchLoggedState } from '~/redux/reducers/loginSlice'
+import { storeDataString } from '../utils/storageFunctions'
+import { fetchGuestState, fetchLoggedState } from '../redux/reducers/loginSlice'
 
 export default function LoginPage({setIsLogged, setIsGuest, isGuest, isLogged}) {
     // States are not available right away so states needs to be used

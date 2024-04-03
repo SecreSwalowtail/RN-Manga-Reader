@@ -1,25 +1,10 @@
 {
+  "compilerOptions": {},
   "extends": "expo/tsconfig.base",
-  "compilerOptions": {
-    "strict": true,
-    "baseUrl": ".",
-    "paths": {
-      "~/*": [
-        "*"
-      ]
-    }
-  },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.js",
-    "../redux/reducers/loginSlice.js",
-    "../../redux/store.js",
-    "app/index.jsx",
-    "app/manga/[id].jsx",
-    "app/character/[character].jsx",
-    "index.js",
     "expo-env.d.ts"
-, "components/Avatar.jsx", "utils/useFetchTopMangas.js", "utils/useFetchManga.js", "utils/useFetchCharactersManga.js", "utils/useFetchCharacterDescription.js", "utils/storageFunctions.js", "utils/axiosInstances.js", "components/FavoriteButton.jsx", "components/MangaCard.jsx", "components/TrendingView.jsx", "components/Search.jsx", "components/ProfileArea.jsx", "components/MangaFilter.jsx", "components/MoreButton.jsx"  ]
+  ]
 }

@@ -1,6 +1,5 @@
 import { buildCreateSlice, asyncThunkCreator, createAsyncThunk } from '@reduxjs/toolkit'
-import { avatarApi } from '~/utils/axiosInstances'
-import { readStringData, storeDataString } from '~/utils/storageFunctions'
+import { readStringData, storeDataString } from '../../utils/storageFunctions'
 
 
 const createSliceWithThunks = buildCreateSlice({
@@ -9,7 +8,6 @@ const createSliceWithThunks = buildCreateSlice({
     }
 })
 
-const api = avatarApi()
 
 const loginSlice = createSliceWithThunks({
     name: 'login',

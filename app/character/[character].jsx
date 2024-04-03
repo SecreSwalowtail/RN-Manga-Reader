@@ -1,7 +1,7 @@
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
 import React, { useEffect } from "react"
 import { View, StyleSheet, Text, Pressable, Linking, ScrollView} from "react-native"
-import useFetchCharacterDescription from "~/utils/useFetchCharacterDescription"
+import useFetchCharacterDescription from "../../utils/useFetchCharacterDescription"
 import { Image } from "expo-image"
 
 export default function CharacterView() {

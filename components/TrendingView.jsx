@@ -1,5 +1,5 @@
 import { ScrollView, View, StyleSheet, Text, Pressable } from "react-native";
-import useFetchTopMangas from "~/utils/useFetchTopMangas";
+import useFetchTopMangas from "../utils/useFetchTopMangas";
 import { useState } from "react";
 import MangaCard from "./MangaCard";
 import MoreButton from "./MoreButton";
