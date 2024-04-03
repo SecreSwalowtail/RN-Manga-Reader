@@ -1,8 +1,8 @@
 import { Image } from "expo-image"
-import { StyleSheet, View, Text, Pressable, ScrollView } from "react-native"
+import { StyleSheet, View, Text, Pressable } from "react-native"
 import { Link } from 'expo-router';
 
-export default function MangaCard({ image, title, genre, id }: any) {
+export default function MangaCard({ image, title, genre, id }) {
     const slicedGenres = genre[0]
 
     return (

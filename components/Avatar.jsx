@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Text, View, StyleSheet, ImageBackground } from "react-native";
-import { Image } from 'expo-image';
-import PlaceholderImage from '../assets/image_scheleton.png'
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSegments } from "expo-router";
+import { useSelector } from "react-redux";
+import { avatarApi } from "~/utils/axiosInstances";
 
 function ProfileIconNotification() {
     return (
@@ -19,12 +20,12 @@ function ProfileIconNotification() {
 }
 
 export default function ProfileIcon() {
-    const [isGuest, setGuest] = useState(true)
-    const image = { uri: "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg" };
-
+    const guestImage = {uri: 'https://ui-avatars.com/api/?name=Guest+Account'}
+    
+    const state = useSelector((state) => state.login)
     return (
         <View style={styles.profileImageContainer}>
-            <ImageBackground style={styles.image} source={image} imageStyle={styles.imageStyle}>
+            <ImageBackground style={styles.image} source={state.isGuest ? guestImage : null} imageStyle={styles.imageStyle}>
                 <ProfileIconNotification />
             </ImageBackground>
             <View style={styles.textContainer}>

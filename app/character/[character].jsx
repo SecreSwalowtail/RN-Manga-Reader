@@ -10,7 +10,7 @@ export default function CharacterView() {
     console.log(params)
 
     const characterData = useFetchCharacterDescription(params.id)
-
+    
     return (
         <>
         <ScrollView style={styles.container}>
@@ -75,15 +75,15 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 25,
         top: '90%',
-        left: '32%',
+        left: '35%',
         position: 'absolute',
-        width: 150,
-        height: 60,
+        width: 125,
+        height: 40,
         justifyContent: 'center',
         alignItems: 'center',
         shadowOpacity: 0.7,
         shadowRadius: 12,
-        elevation: 18,
+        elevation: 22,
         shadowColor: 'black',
         shadowOffset: {
             width: 0,
@@ -112,7 +112,8 @@ const styles = StyleSheet.create({
         height: 200,
         marginTop: 100,
         borderTopLeftRadius: 24,
-        borderTopRightRadius: 24
+        borderTopRightRadius: 24,
+        overflow: 'hidden'
     },
     textContainer: {
         flexDirection: 'row',

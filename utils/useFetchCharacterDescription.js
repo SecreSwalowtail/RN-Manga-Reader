@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
 import { JikanApi } from "./axiosInstances"
 
-export default function useFetchCharacterDescription(id: string | string[]) {
+export default function useFetchCharacterDescription(id) {
 
     const api = JikanApi()
     const [response, setResponse] = useState(null)
-    const aboutArray: any = []
+    const aboutArray = []
 
     useEffect(() => {
         const fetch = async () => {

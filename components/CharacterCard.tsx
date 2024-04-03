@@ -20,7 +20,7 @@ export default function CharacterCard({image, roles, id, name} : any) {
                     source={image}
                 />
                 <View style={styles.textContainer}>
-                    <Text style={styles.nameText} numberOfLines={1}>{name}</Text>
+                    <Text style={styles.nameText} numberOfLines={2}>{name}</Text>
                     <Text style={styles.supportingText}>Role: {roles}</Text>
                 </View>
             </Pressable>
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
         height: 260,
         paddingLeft: 33,
         paddingRight: 22,
-        alignItems: 'center'
+        alignItems: 'center',
     },
     image: {
         flex: 1,

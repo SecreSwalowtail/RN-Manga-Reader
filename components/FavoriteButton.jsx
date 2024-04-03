@@ -1,4 +1,4 @@
-import {StyleSheet, View, Pressable } from "react-native"
+import {StyleSheet, Pressable } from "react-native"
 import HearthIcon from '../assets/loveIcon.svg'
 
 export default function FavoriteButton() {

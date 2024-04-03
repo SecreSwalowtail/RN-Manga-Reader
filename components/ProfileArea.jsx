@@ -1,7 +1,6 @@
-import { View, StyleSheet, Text, Pressable } from "react-native";
+import { View, StyleSheet,Pressable } from "react-native";
 import ProfileIcon from "./Avatar";
 import DrawerSvg from '../assets/Drawer.svg'
-import { Image } from 'expo-image';
 
 export default function ProfileArea() {
     return (

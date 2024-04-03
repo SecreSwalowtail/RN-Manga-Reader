@@ -2,7 +2,7 @@ import { View, StyleSheet } from "react-native";
 import Point from '../assets/morePoint.svg'
 import PointWhite from '../assets/morePointWhite.svg'
 
-export default function MoreButton({type} : any) {
+export default function MoreButton({type='black'}) {
     if (type === 'black') {
         return (
             <View style={styles.moreButton}>
