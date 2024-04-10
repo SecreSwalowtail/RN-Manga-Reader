@@ -1,14 +1,20 @@
-import {View, StyleSheet, Text, Pressable} from 'react-native'
+import { View, StyleSheet, Text, Pressable } from 'react-native'
 import GithubLogo from '../assets/github.svg'
 import DiscordLogo from '../assets/discord.svg'
-import { useDispatch } from 'react-redux'
-import { storeDataString } from '../utils/storageFunctions'
-import { fetchGuestState, fetchLoggedState } from '../redux/reducers/loginSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { readObjectData, storeDataString } from '../utils/storageFunctions'
+import { fetchGuestState, fetchLoggedState, fetchUserTokens } from '../redux/reducers/loginSlice'
+import { getNewCodeVerifier } from '../utils/PckeGenerator'
+import { useEffect, useState } from 'react'
+import * as Linking from 'expo-linking';
+import fetchMalToken from '../utils/fetchMalToken'
+import { router } from 'expo-router';
 
-export default function LoginPage({setIsLogged, setIsGuest, isGuest, isLogged}) {
+export default function LoginPage({ setIsLogged, setIsGuest, isGuest, isLogged }) {
     // States are not available right away so states needs to be used
     // to check the login/guest status right when the user enters the application
     const dispatch = useDispatch()
+    const [pcke, setPcke] = useState(getNewCodeVerifier()) // Idk why but if do a simple variable with it, it does not run
 
     const onGuestButtonPress = async () => {
         // Change the isGuest state
@@ -21,40 +27,74 @@ export default function LoginPage({setIsLogged, setIsGuest, isGuest, isLogged}) 
         // Update redux slice
         dispatch(fetchGuestState())
         dispatch(fetchLoggedState())
-
     }
 
     const onLoginButtonPress = () => {
-        null
-        // Future implementation of O2 Auth from MAL
+        // Create the url that will be used to sign in
+        // Later listen to the deep url that will be returned with
+        // the tokens data
+        const params = new URLSearchParams({
+            response_type: 'code',
+            client_id: process.env.EXPO_PUBLIC_CLIENT_ID,
+            code_challenge: pcke,
+            state: 'logged'
+        })
+        url = `https://myanimelist.net/v1/oauth2/authorize?${params.toString()}`
+        Linking.openURL(url)
     }
+
+    const handleDeepLink = async (e) => {
+        try {
+            const data = Linking.parse(e.url);
+            const { queryParams } = data;
+            dispatch(fetchUserTokens({ pcke: pcke, code: queryParams.code }))
+        } catch (e) {
+            console.log('Error in handleDeepLink', e)
+        } finally {
+            const isLogged = await readObjectData('isLogged')
+            console.log(isLogged)
+            if (isLogged) {
+                setIsGuest(false)
+                setIsLogged(true)
+            }
+        }
+    }
+
+    useEffect(() => {
+        const urlSubscription = Linking.addEventListener('url', handleDeepLink)
+        return (() => {
+            urlSubscription.remove()
+        })
+        // Add an event listener
+        // When the component unmounts return a clean-up function
+    }, [])
 
     return (
         <View style={styles.container}>
             <View style={styles.titleView}>
                 <Text style={styles.title}>Welcome</Text>
-                <Text>Sign in with MAL</Text>
+                <Text>Sign in</Text>
             </View>
             <View style={styles.secondaryView}>
-                <View style={{borderRadius: 25, overflow: 'hidden'}}>
-                    <Pressable style={styles.loginButton} android_ripple={{color: '#A2B2FC'}} onPress={onLoginButtonPress}>
+                <View style={{ borderRadius: 25, overflow: 'hidden' }}>
+                    <Pressable style={styles.loginButton} android_ripple={{ color: '#A2B2FC' }} onPress={onLoginButtonPress}>
                         <Text style={styles.loginButtonText}>Continue with MAL</Text>
                     </Pressable>
                 </View>
-                <View style={{borderRadius: 25, backgroundColor: 'white', overflow: 'hidden'}}>
-                    <Pressable style={styles.guestButton} android_ripple={{color: '#A2B2FC'}} onPress={onGuestButtonPress}>
+                <View style={{ borderRadius: 25, backgroundColor: 'white', overflow: 'hidden' }}>
+                    <Pressable style={styles.guestButton} android_ripple={{ color: '#A2B2FC' }} onPress={onGuestButtonPress}>
                         <Text style={styles.guestButtonText}>Continue as Guest</Text>
                     </Pressable>
                 </View>
             </View>
             <View style={styles.links}>
                 <View>
-                    <Text style={{fontFamily: 'UbuntuRegular', fontSize: 18, textAlign: 'center'}}>Github</Text>
-                    <GithubLogo width={60} height={60}/>
+                    <Text style={{ fontFamily: 'UbuntuRegular', fontSize: 18, textAlign: 'center' }}>Github</Text>
+                    <GithubLogo width={60} height={60} />
                 </View>
                 <View>
-                    <Text style={{fontFamily: 'UbuntuRegular', fontSize: 18, textAlign: 'center'}}>Discord</Text>
-                    <DiscordLogo width={60} height={60}/>
+                    <Text style={{ fontFamily: 'UbuntuRegular', fontSize: 18, textAlign: 'center' }}>Discord</Text>
+                    <DiscordLogo width={60} height={60} />
                 </View>
             </View>
         </View>

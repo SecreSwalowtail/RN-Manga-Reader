@@ -10,22 +10,23 @@ import { Provider as StoreProvider } from 'react-redux'
 import LoginPage from '../components/LoginPage'
 import { readStringData, storeDataString } from '../utils/storageFunctions'
 import { store } from '../redux/store'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function Page() {
 
   const [fontsLoaded, fontError] = Font.useFonts({
     'UbuntuRegular': require('../assets/fonts/Ubuntu-Regular.ttf'),
   })
-
+  
   const [isLogged, setIsLogged] = useState(null)
   const [isGuest, setIsGuest] = useState(null)
 
-  // useEffect(() => {
-  //   const test = async () => {
-  //     await AsyncStorage.clear()
-  //   }
-  //   test()
-  // }, [])
+  useEffect(() => {
+    const test = async () => {
+      await AsyncStorage.clear()
+    }
+    test()
+  }, [])
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded || fontError) {

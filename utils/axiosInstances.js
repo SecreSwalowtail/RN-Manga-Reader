@@ -23,3 +23,9 @@ export const avatarApi = () => {
         baseURL: 'https://ui-avatars.com/api/?name=Guest+Account'
     })
 }
+
+export const MalApi = () => {
+    return axios.create({
+        baseURL: 'https://myanimelist.net/v1/oauth2/',
+    })
+}
