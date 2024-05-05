@@ -6,11 +6,7 @@ import { Image } from "expo-image"
 
 export default function CharacterView() {
     const params = useLocalSearchParams()
-    const router = useRouter()
-    console.log(params)
-
     const characterData = useFetchCharacterDescription(params.id)
-    
     return (
         <>
         <ScrollView style={styles.container}>
@@ -68,16 +64,16 @@ export default function CharacterView() {
 const styles = StyleSheet.create({
     buttonText: {
         fontFamily: 'UbuntuRegular',
-        fontSize: 24,
+        fontSize: 18,
         
     },
     urlButton: {
         backgroundColor: 'white',
         borderRadius: 25,
         top: '90%',
-        left: '35%',
+        left: '37%',
         position: 'absolute',
-        width: 125,
+        width: 115,
         height: 40,
         justifyContent: 'center',
         alignItems: 'center',
@@ -124,7 +120,7 @@ const styles = StyleSheet.create({
     },
     innerTextContainer: {
         alignItems: 'center',
-        gap: 4
+        gap: 4,
     },
     textOne: {
         fontFamily: 'UbuntuRegular',

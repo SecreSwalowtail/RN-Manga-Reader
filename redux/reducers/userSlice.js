@@ -1,9 +1,6 @@
-// Slice for My Anime List data if we return valid thing from loginSlice
 import { buildCreateSlice, asyncThunkCreator, createAsyncThunk } from '@reduxjs/toolkit'
-
-const refreshUserToken = async (client_id, refresh_token, refresh_time) => {
-    // Convert the refresh time to a future date
-}
+import fetchUserData from '../../utils/fetchUserData'
+import { readObjectData } from '../../utils/storageFunctions'
 
 const createSliceWithThunks = buildCreateSlice({
     creators: {
@@ -14,9 +11,34 @@ const createSliceWithThunks = buildCreateSlice({
 const userSlice = createSliceWithThunks({
     name: 'user',
     initialState: {
-        test: null
+        accountData: null,
+        allMangas: null,
+        isLoading: false,
     },
      reducers: create => ({
-        
+        fetchData: create.asyncThunk(async (arg, thunkApi) => {
+            const token = await readObjectData('userToken')
+            const response = await fetchUserData(token, arg)
+            return response
+        }, {
+            pending: state => {
+                state.isLoading = true
+            },
+            rejected: (state, action) => {
+                state.isLoading = false
+                console.log(action.error)
+            },
+            fulfilled: (state, action) => {
+                switch (action.payload.type) {
+                    case '':
+                        state.accountData = action.payload.data
+                    case 'allMangas':
+                        state.allMangas = action.payload.data
+                }
+            }
+        })
      })
 })
+
+export const {fetchData} = userSlice.actions
+export default userSlice.reducer

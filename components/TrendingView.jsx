@@ -1,30 +1,68 @@
 import { ScrollView, View, StyleSheet, Text, Pressable } from "react-native";
-import useFetchTopMangas from "../utils/useFetchTopMangas";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MangaCard from "./MangaCard";
 import MoreButton from "./MoreButton";
-
-import MangaFilter from "./MangaFilter";
+import { router } from 'expo-router';
+import { useSelector } from "react-redux";
+import { JikanApi } from "../utils/axiosInstances";
 
 export default function TrendingView() {
-    const mangaData = useFetchTopMangas('manga', 'favorite')
+    const filterState = useSelector((state) => state.filter)
+    const [mangaData, setMangaData] = useState(null)
+    const [viewTitle, setViewTitle] = useState(null)
 
-    const [filterOpen, setFilterOpen] = useState(false)
+    useEffect(() => {
+        const fetchTopMangaData = async () => {
+            if (filterState) {
+                let data = []
+                
+                const trueType = Object.keys(filterState.type).find(key => filterState.type[key])
+                const trueFilter = Object.keys(filterState.filter).find(key => filterState.filter[key])
+
+                // Specific case for by poplarity tag to display it correctly
+                // Should probably simply this since im using slicing on literals
+                if(filterState.filter.bypopularity) {
+                    setViewTitle(trueType.charAt(0).toUpperCase(0) + trueType.slice(1) + ' ' 
+                    + 'Popularity')
+                } else {
+
+                    setViewTitle(trueType.charAt(0).toUpperCase(0) + trueType.slice(1) + ' ' 
+                + trueFilter.charAt(0).toUpperCase(0) + trueFilter.slice(1))
+                }
+
+
+                const api = JikanApi({ 'type': trueType, 'filter': trueFilter, 'page': 1, limit: 15 })
+                const response = await api.get('/top/manga')
+
+                if (response.status === 200) {
+                    response.data.data.map((item) => {
+                        data.push({
+                            title: item.title,
+                            image: item.images.jpg.large_image_url,
+                            genre: item.genres.map((genre) => genre.name),
+                            id: item.mal_id,
+                            score: item.score
+                        })
+                    })
+                    setMangaData(data)
+                }
+            }
+        }
+        fetchTopMangaData()
+    }, [filterState])
 
     return (
         <View style={styles.container}>
             <View style={styles.textContainer}>
-                <Text style={styles.text}>Top Manga</Text>
-                <Pressable style={{ justifyContent: 'center', height: 30, width: 40, borderRadius: 24 }} onPress={() => { setFilterOpen(!filterOpen) }} android_ripple={{ color: '#A2B2FC', borderless: true }}>
+                <Text style={styles.text}>{viewTitle}</Text>
+                <Pressable style={{ justifyContent: 'center', height: 30, width: 40, borderRadius: 24 }} onPress={() => { router.push('viewMangaModal') }} android_ripple={{ color: '#A2B2FC', borderless: true }}>
                     <MoreButton type={'black'} />
                 </Pressable>
-                {filterOpen ? <MangaFilter /> : null}
             </View>
             <ScrollView style={styles.scrollViewContainer} horizontal={true} contentContainerStyle={styles.contentStyle} showsHorizontalScrollIndicator={false}>
-
-                {mangaData ? mangaData.map((item, index) => (
-                    <MangaCard image={item.image} title={item.title} genre={item.genre} id={item.id} key={index} />
-                )) : null}
+                {mangaData && Object.keys(mangaData).length > 0 ? mangaData.map((item, index) => (
+                    <MangaCard image={item.image} title={item.title} genre={item.genre} id={item.id} key={index} background={item.background} score={item.score}/>
+                )) : <Text style={{fontFamily: 'UbuntuRegular', fontSize: 16}}>Sorry, no data available for your selection.</Text>}
             </ScrollView>
         </View>
     )

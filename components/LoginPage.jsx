@@ -2,28 +2,20 @@ import { View, StyleSheet, Text, Pressable } from 'react-native'
 import GithubLogo from '../assets/github.svg'
 import DiscordLogo from '../assets/discord.svg'
 import { useDispatch, useSelector } from 'react-redux'
-import { readObjectData, storeDataString } from '../utils/storageFunctions'
+import { readObjectData, storeDataObject, storeDataString } from '../utils/storageFunctions'
 import { fetchGuestState, fetchLoggedState, fetchUserTokens } from '../redux/reducers/loginSlice'
 import { getNewCodeVerifier } from '../utils/PckeGenerator'
 import { useEffect, useState } from 'react'
 import * as Linking from 'expo-linking';
-import fetchMalToken from '../utils/fetchMalToken'
-import { router } from 'expo-router';
 
-export default function LoginPage({ setIsLogged, setIsGuest, isGuest, isLogged }) {
-    // States are not available right away so states needs to be used
-    // to check the login/guest status right when the user enters the application
+export default function LoginPage() {
     const dispatch = useDispatch()
+    const state = useSelector((state) => state.login)
     const [pcke, setPcke] = useState(getNewCodeVerifier()) // Idk why but if do a simple variable with it, it does not run
 
     const onGuestButtonPress = async () => {
-        // Change the isGuest state
-        setIsGuest(!isGuest)
-        // Change the isLogged state just to be sure
-        setIsLogged(false)
-        // Update the storage state
-        storeDataString('isGuest', !isGuest)
-        storeDataString('isLogged', false)
+        await storeDataString('isGuest', true)
+        await storeDataString('isLogged', false)
         // Update redux slice
         dispatch(fetchGuestState())
         dispatch(fetchLoggedState())
@@ -50,14 +42,8 @@ export default function LoginPage({ setIsLogged, setIsGuest, isGuest, isLogged }
             dispatch(fetchUserTokens({ pcke: pcke, code: queryParams.code }))
         } catch (e) {
             console.log('Error in handleDeepLink', e)
-        } finally {
-            const isLogged = await readObjectData('isLogged')
-            console.log(isLogged)
-            if (isLogged) {
-                setIsGuest(false)
-                setIsLogged(true)
-            }
-        }
+            await storeDataObject('isLogged', false)
+        } 
     }
 
     useEffect(() => {

@@ -5,17 +5,13 @@ import { Image } from "expo-image"
 import FavoriteButton from '../../components/FavoriteButton'
 import CharacterCard from "../../components/CharacterCard"
 import { useEffect, useState } from "react"
+import useFetchMangaDescription from "../../utils/useFetchMangaDescription"
 
 export default function MangaView() {
     const params = useLocalSearchParams()
-    const router = useRouter()
     const charactersData = useFetchCharactersManga(params.id)
-
+    const mangaDataDetails = useFetchMangaDescription(params.id)
     const [activeButton, setActiveButton] = useState('character')
-
-    const setActiveView = (text) => {
-        setActiveButton(text)
-    }
 
     return (
         <View style={styles.container}>
@@ -34,20 +30,23 @@ export default function MangaView() {
                 contentFit="cover"
             />
             <View style={styles.secondaryContainer}>
-                <Text style={styles.titleText}>{params.title}</Text>
+                <View style={{flexDirection: 'row', width: 'auto'}}>
+                    <Text style={styles.titleText}>{params.title}</Text>
+                </View>
+                <Text style={{fontFamily: 'UbuntuRegular'}}>Score: {params.score}</Text>
                 <FavoriteButton />
             </View>
             <View style={styles.buttonContainer}>
                 <View style={styles.innerTextContainer}>
-                    <Pressable 
-                    onPress={() => {setActiveButton('manga')}}
-                    style={activeButton === 'manga' ? styles.buttonMangaPressed : styles.buttonManga}>
-                        <Text>Manga</Text>
+                    <Pressable
+                        onPress={() => { setActiveButton('manga') }}
+                        style={activeButton === 'manga' ? styles.buttonMangaPressed : styles.buttonManga}>
+                        <Text style={activeButton === 'manga' ? { color: 'white' } : { color: 'black' }}>Manga</Text>
                     </Pressable>
-                    <Pressable 
-                    onPress={() => {setActiveButton('character')}}
-                    style={activeButton === 'character' ? styles.characterButtonPressed : styles.buttonCharacters}>
-                        <Text>Characters</Text>
+                    <Pressable
+                        onPress={() => { setActiveButton('character') }}
+                        style={activeButton === 'character' ? styles.characterButtonPressed : styles.buttonCharacters}>
+                        <Text style={activeButton === 'character' ? { color: 'white' } : { color: 'black' }}>Characters</Text>
                     </Pressable>
                 </View>
             </View>
@@ -56,18 +55,25 @@ export default function MangaView() {
                     <CharacterCard key={index} image={item.image} roles={item.role} name={item.character} id={item.id} about={item.about}/>
                 )) : null}
             </ScrollView> */}
-            {charactersData ? <FlatList 
+            {charactersData && activeButton === 'character' ? (<FlatList
                 data={charactersData}
-                renderItem={({item }) => {
+                renderItem={({ item }) => {
                     return (
                         <CharacterCard image={item.image} roles={item.role} name={item.character} id={item.id} about={item.about} />
                     )
                 }}
-                keyExtractor={(item ) => item.id.toString()}
+                keyExtractor={(item) => item.id.toString()}
                 showsVerticalScrollIndicator={false}
                 style={styles.scrollViewContainer}
-            /> : null}
-        </View> 
+            />) : (<FlatList
+                data={mangaDataDetails}
+                renderItem={({ item }) => {
+                    return (
+                        null
+                    )
+                }}
+            />)}
+        </View>
     )
 }
 
@@ -79,14 +85,13 @@ const styles = StyleSheet.create({
     characterButtonPressed: {
         width: '50%',
         height: '100%',
-        backgroundColor: 'white',
+        backgroundColor: '#00325e',
         borderBottomRightRadius: 24,
         borderTopRightRadius: 24,
         justifyContent: 'center',
         alignItems: 'center',
 
         borderWidth: 1,
-        borderColor: 'black'
     },
     innerTextContainer: {
         flex: 1,
@@ -151,14 +156,13 @@ const styles = StyleSheet.create({
     buttonMangaPressed: {
         width: '50%',
         height: '100%',
-        backgroundColor: 'white',
+        backgroundColor: '#00325e',
         justifyContent: 'center',
         alignItems: 'center',
         borderBottomLeftRadius: 24,
         borderTopLeftRadius: 24,
-        
         borderWidth: 1,
-        borderColor: 'black'
+
     },
     buttonCharacters: {
         width: '50%',

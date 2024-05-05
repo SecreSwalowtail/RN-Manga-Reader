@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { Text, View, StyleSheet, ImageBackground } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
-import { useSegments } from "expo-router";
 import { useSelector } from "react-redux";
-import { avatarApi } from "../utils/axiosInstances";
 
 function ProfileIconNotification() {
     return (
@@ -12,29 +10,38 @@ function ProfileIconNotification() {
                 colors={['#A2B2FC', '#FFF1BE']}
                 style={styles.linearGradient}
             >
-
                 <Text style={styles.popoutText}>3</Text>
             </LinearGradient>
         </View>
     )
 }
 
+function ReturnGreetingMessage() {
+    const data = ['Stay Trening!', 'Welcome to Manga Reader!', 'Welcome back.', 'Happy Reading', 'Gojo comes back next chapter']
+    return data[Math.floor(Math.random() * data.length)]
+}
+
 export default function ProfileIcon() {
-    const guestImage = {uri: 'https://ui-avatars.com/api/?name=Guest+Account'}
-    
+    const guestImage = { uri: 'https://ui-avatars.com/api/?name=Guest+Account' }
+
     const state = useSelector((state) => state.login)
+    const userData = useSelector((state) => state.user)
     return (
         <View style={styles.profileImageContainer}>
-            <ImageBackground style={styles.image} source={state.isGuest ? guestImage : null} imageStyle={styles.imageStyle}>
-                <ProfileIconNotification />
-            </ImageBackground>
-            <View style={styles.textContainer}>
-                <Text
-                    numberOfLines={1}
-                    style={styles.textMessage}
-                >Stay Trending!</Text>
-                <Text style={styles.textName}>Illia Frunza</Text>
-            </View>
+            {userData.accountData || state.isGuest ? (
+                <>
+                    <ImageBackground style={styles.image} source={state.isGuest ? guestImage : { uri: userData.accountData.picture }} imageStyle={styles.imageStyle}>
+                        <ProfileIconNotification />
+                    </ImageBackground>
+                    <View style={styles.textContainer}>
+                        <Text
+                            numberOfLines={2}
+                            style={styles.textMessage}
+                        >{ReturnGreetingMessage()}</Text>
+                        <Text style={styles.textName}>{!state.isGuest ? userData.accountData.name : 'Guest Account'}</Text>
+                    </View>
+                </>
+            ) : null}
         </View>
     )
 }
@@ -43,7 +50,7 @@ const styles = StyleSheet.create({
     profileImageContainer: {
         flexDirection: 'row',
         flex: 1,
-        
+
     },
     image: {
         width: 60,
@@ -97,7 +104,7 @@ const styles = StyleSheet.create({
         shadowRadius: 6,
         elevation: 14,
         width: 22
-        
+
     },
     popoutText: {
         color: 'white',

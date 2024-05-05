@@ -1,31 +1,60 @@
 import { SplashScreen } from 'expo-router'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
 import { StyleSheet, SafeAreaView } from 'react-native'
 import * as Font from 'expo-font'
 import ProfileArea from '../components/ProfileArea'
 import Search from '../components/Search'
 import TrendingView from '../components/TrendingView'
 import CurrentlyReading from '../components/CurrentlyReading'
-import { Provider as StoreProvider } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import LoginPage from '../components/LoginPage'
-import { readStringData, storeDataString } from '../utils/storageFunctions'
-import { store } from '../redux/store'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { fetchGuestState, fetchLoggedState, fetchMangaDexToken } from '../redux/reducers/loginSlice'
+import { fetchData } from '../redux/reducers/userSlice'
+import { readStringData } from '../utils/storageFunctions'
 
 export default function Page() {
 
   const [fontsLoaded, fontError] = Font.useFonts({
     'UbuntuRegular': require('../assets/fonts/Ubuntu-Regular.ttf'),
+    'UbuntuBold': require('../assets/fonts/Ubuntu-Bold.ttf')
   })
-  
-  const [isLogged, setIsLogged] = useState(null)
-  const [isGuest, setIsGuest] = useState(null)
+  const state = useSelector((state) => state.login)
+  const dispatch = useDispatch()
+
+  // useEffect(() => {
+  //   const test = async () => {
+  //     await AsyncStorage.clear()
+  //   }
+  //   test()
+  // }, [])
 
   useEffect(() => {
-    const test = async () => {
-      await AsyncStorage.clear()
+    // These values will be null if its the first start-up so populate them accordingly
+    const checkInitialStart = async () => {
+      dispatch(fetchLoggedState())
+      dispatch(fetchGuestState())
     }
-    test()
+    checkInitialStart()
+  }, [])
+
+  useEffect(() => {
+    // If the log-in is sucesfull, get all user data
+    const fetchUserData = async () => {
+      if (state.isLogged) {
+        dispatch(fetchData())
+        dispatch(fetchData('/mangalist'))
+      }
+    }
+    fetchUserData()
+  }, [state.isLogged])
+
+  useEffect(() => {
+    // Get the tokens on app start-up
+    // The token always expires in 900 seconds, redux reject should handle that response and refetch automatically
+    const fetchMdStorageTokens = async () => {
+      dispatch(fetchMangaDexToken())
+    }
+    fetchMdStorageTokens()
   }, [])
 
   const onLayoutRootView = useCallback(async () => {
@@ -34,51 +63,23 @@ export default function Page() {
     }
   }, [fontsLoaded, fontError])
 
-  useEffect(() => {
-    const checkLoggedStatus = async () => {
-      const response = await readStringData('isLogged')
-      if (response === null || response === undefined) {
-        setIsLogged(false)
-        await storeDataString('isLogged', false)
-      } else {
-        setIsLogged(response)
-      }
-    }
-    const checkGuestStatus = async () => {
-      const response = await readStringData('isGuest')
-      if (response === null || response === undefined) {
-        setIsGuest(false)
-        await storeDataString('isGuest', false)
-      } else {
-        setIsGuest(response)
-      }
-    }
-
-    checkGuestStatus()
-    checkLoggedStatus()
-  }, [])
-
   if (!fontsLoaded && !fontError) {
     return null
   }
 
   return (
-    <StoreProvider store={store}>
       <SafeAreaView style={styles.mainContainer} onLayout={onLayoutRootView}>
-        {!isLogged && !isGuest ? ( 
-          <LoginPage setIsLogged={setIsLogged} setIsGuest={setIsGuest} isLogged={isLogged} isGuest={isGuest}/> 
+        {!state.isLogged && !state.isGuest ? (
+          <LoginPage/>
         ) : (
           <>
-            <>
-              <ProfileArea />
-              <Search />
-              <TrendingView />
-              <CurrentlyReading />
-            </>
+            <ProfileArea />
+            <Search />
+            <TrendingView />
+            <CurrentlyReading />
           </>
         )}
       </SafeAreaView>
-    </StoreProvider>
   );
 }
 

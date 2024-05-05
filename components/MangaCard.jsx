@@ -2,15 +2,14 @@ import { Image } from "expo-image"
 import { StyleSheet, View, Text, Pressable } from "react-native"
 import { Link } from 'expo-router';
 
-export default function MangaCard({ image, title, genre, id }) {
+export default function MangaCard({ image, title, genre, id, background, score}) {
     const slicedGenres = genre[0]
-
     return (
         <Link
             asChild
             href={{
                 pathname: "/manga/[id]",
-                params: { id: id, title: title, image: image }
+                params: { id: id, title: title, image: image, score: score }
             }}>
             <Pressable>
                 <View style={styles.container}>

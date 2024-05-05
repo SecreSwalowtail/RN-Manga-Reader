@@ -1,6 +1,8 @@
 import { buildCreateSlice, asyncThunkCreator, createAsyncThunk } from '@reduxjs/toolkit'
 import { readStringData, storeDataObject, storeDataString } from '../../utils/storageFunctions'
 import fetchMalToken from '../../utils/fetchMalToken'
+import { MangaDexApi } from '../../utils/axiosInstances'
+import axios from 'axios'
 
 
 const createSliceWithThunks = buildCreateSlice({
@@ -19,7 +21,10 @@ const loginSlice = createSliceWithThunks({
 
         userToken: null,
         userRefreshToken: null,
-        userExpiresIn: null
+        userExpiresIn: null,
+
+        md_access_token: null,
+        md_refresh_token: null,
     },
     reducers: create => ({
         setGuest: create.reducer((state, action) => {
@@ -88,7 +93,7 @@ const loginSlice = createSliceWithThunks({
             fulfilled: (state, action) => {
                 state.isLoading = false
                 state.userExpiresIn = action.payload.expires_in
-                state.userRefreshToken = action.payload.refresh_token,
+                state.userRefreshToken = action.payload.refresh_token
                 state.userToken = action.payload.user_token
                 state.isLogged = true
                 
@@ -99,9 +104,43 @@ const loginSlice = createSliceWithThunks({
                 storeDataObject('isLogged', true)
                 storeDataObject('isGuest', false)
             }
+        }),
+        fetchMangaDexToken: create.asyncThunk(async (args, thunkApi) => {
+            // Post the data to MangaDex
+            const creds = {
+                grant_type: 'password',
+                username: process.env.EXPO_PUBLIC_MANGA_DEX_USERNAME,
+                password: process.env.EXPO_PUBLIC_MANGA_DEX_PASSWORD,
+                client_id: process.env.EXPO_PUBLIC_MANGA_DEX_CLIENT_ID,
+                client_secret: process.env.EXPO_PUBLIC_MANGA_DEX_CLIENT_SECRET
+            }
+
+            const formData = new URLSearchParams(creds).toString();
+
+            const resp = await axios({
+                method: 'POST',
+                url: `https://auth.mangadex.org/realms/mangadex/protocol/openid-connect/token`,
+                data: formData
+            })
+
+            return { access_token, refresh_token } = resp.data;
+        }, {
+            pending: state => {
+                state.isLoading = true
+            },
+            rejected: (state, action) => {
+                state.isLoading = false
+                console.log('Something happend on fetchMangaDexToken', action.error)
+            },
+            fulfilled: (state, action) => {
+                state.isLoading = false
+                console.log(action.payload)
+                state.md_access_token = action.payload.access_token
+                state.md_refresh_token = action.payload.refresh_token
+            }
         })
     })
 })
 
-export const { setIsGuest, setIsLogged, fetchGuestState, fetchLoggedState, fetchUserTokens} = loginSlice.actions
+export const { setIsGuest, setIsLogged, fetchGuestState, fetchLoggedState, fetchUserTokens, fetchMangaDexToken} = loginSlice.actions
 export default loginSlice.reducer

@@ -21,8 +21,6 @@ export default function useFetchCharacterDescription(id) {
                         'url': response.data.data.url
                     })
                     setResponse(aboutArray)
-                } else {
-                    console.log(response.data)
                 }
             } catch (e) {
                 console.log('Error in getting character description: ', e)
